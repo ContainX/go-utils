@@ -30,6 +30,17 @@ Replaces `${TOKEN}` values from a io.reader into a value matching the key.
 Provides OOB resolver to replace tokens with environment variables. Provides the ability
 to specify a custom resolver to in-place lookups when `${TOKENS}` are found
 
+## Building
+
+```
+go build ./...
+```
+
+**Testing:**
+```
+go test ./...
+```
+
 ## License
 
 This software is licensed under the Apache 2 license, quoted below.
