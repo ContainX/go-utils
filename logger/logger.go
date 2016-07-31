@@ -14,24 +14,24 @@ const (
 )
 
 // Logger is a wrapper for a logrus.Logger which adds a category
-type Logger struct {
+type Log struct {
 	// Current category for this logger
 	category string
 	// inherit from logrus logger
 	logrus.Logger
 }
 
-var loggers map[string]*Logger
-var globalLogger *Logger
+var loggers map[string]*Log
+var globalLogger *Log
 
 func init() {
-	loggers = map[string]*Logger{}
+	loggers = map[string]*Log{}
 	globalLogger = GetLogger(DefaultCategory)
 }
 
 // GetLogger returns an existing logger for the specified category or
 // creates a new one if it hasn't been defined
-func GetLogger(category string) *Logger {
+func GetLogger(category string) *Log {
 	if l, exists := loggers[category]; exists {
 		return l
 	}
@@ -41,7 +41,7 @@ func GetLogger(category string) *Logger {
 }
 
 // Logger is a simple accessor to the global logging instance
-func Logger() *Logger {
+func Logger() *Log {
 	return globalLogger
 }
 
@@ -55,11 +55,12 @@ func SetLevel(level logrus.Level, category string) {
 	}
 }
 
-func newLogger(module string) *Logger {
-	log := &Logger{module}
+func newLogger(c string) *Log {
+	log := &Log{category: c}
 	log.Out = os.Stderr
-	log.Formatter = logrus.TextFormatter{ DisableTimestamp: false, TimestampFormat: DefaultTimeFormat}
-	log.Hooks = logrus.InfoLevel
+	log.Formatter = &logrus.TextFormatter{ DisableTimestamp: false, TimestampFormat: DefaultTimeFormat}
+	log.Hooks = make(logrus.LevelHooks)
+	log.Level = logrus.InfoLevel
 
 	return log
 }
