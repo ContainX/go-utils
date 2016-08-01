@@ -12,3 +12,16 @@ func TestCategory(t *testing.T) {
 	SetLevel(logrus.FatalLevel, "test")
 	assert.Equal(t, logrus.FatalLevel, log.Level, "Expecting FATAL level")
 }
+
+func TestSameInstance(t *testing.T) {
+	log := GetLogger("a")
+	log.Level = logrus.FatalLevel
+
+	log2 := GetLogger("a")
+	assert.Equal(t, log2.Level, logrus.FatalLevel, "Expecting FATAL level")
+}
+
+func TestCategoryPresentInLogger(t *testing.T) {
+	log := GetLogger("abc")
+	assert.Equal(t, "abc", log.category, "Expecting 'abc'")
+}
