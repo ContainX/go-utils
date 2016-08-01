@@ -87,6 +87,9 @@ var (
 	ErrorNotAuthorized = errors.New("Not Authorized to perform this action - Status: 403")
 	// Not Authenticated 401
 	ErrorNotAuthenticated = errors.New("Not Authenticated to perform this action - Status: 401")
+
+	// singleton client used for static function based calls
+	sclient = DefaultHttpClient()
 )
 
 // NewDefaultConfig creates a HttpClientConfig wth default options
@@ -117,6 +120,44 @@ func NewHttpClient(config HttpClientConfig) *httpClient {
 
 func NewResponse(status int, elapsed time.Duration, content string, err error) *Response {
 	return &Response{Status: status, Elapsed: elapsed, Content: content, Error: err}
+}
+
+// Get is a non-instance based call which uses the default configuration
+// for custom overrides and control you should use the HttpClient.
+//
+// Usage: Get a resource from the specified url and unmarshal
+// the response into the result if it is not nil
+func Get(url string, result interface{}) *Response {
+	return sclient.Get(url, result)
+}
+
+// Put is a non-instance based call which uses the default configuration.
+// For custom overrides and control you should use the HttpClient.
+//
+// Usage: Put a data resource to the specified url and unmarshal
+// the response into the result if it is not nil
+func Put(url string, data interface{}, result interface{}) *Response {
+	return sclient.Put(url, data, result)
+}
+
+// Delete is a non-instance based call which uses the default configuration.
+// For custom overrides and control you should use the HttpClient.
+//
+// Usage: Delete a resource from the specified url.  If data is not nil
+// then a body is submitted in the request.  If a result is
+// not nil then the response body will be unmarshalled into the
+// result if it is not nil
+func Delete(url string, data interface{}, result interface{}) *Response {
+	return sclient.Delete(url, data, result)
+}
+
+// Post is a non-instance based call which uses the default configuration.
+// For custom overrides and control you should use the HttpClient.
+//
+// Usage: Post the data against the specified url and unmarshal the
+// response into the result if it is not nil
+func Post(url string, data interface{}, result interface{}) *Response {
+	return sclient.Post(url, data, result)
 }
 
 func (h *httpClient) Get(url string, result interface{}) *Response {
