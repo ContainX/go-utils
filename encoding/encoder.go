@@ -32,6 +32,9 @@ type Encoder interface {
 	// Unmarshal parses the JSON-encoded or YAML-encoded data and stores the result in the value pointed to by v.
 	UnMarshal(r io.Reader, v interface{}) error
 
+	// Unmarshal parses the JSON-encoded or YAML-encoded data and stores the result in the value pointed to by v.
+	UnMarshalFile(f string, v interface{}) error
+
 	// UnMarshalStr is like UnMarshal but handles a raw string vs. a reader interface
 	UnMarshalStr(data string, result interface{}) error
 }

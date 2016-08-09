@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"strings"
 	"github.com/ghodss/yaml"
+	"os"
 )
 
 // An encoder that marshal's and unmarshal's YAML which implements the Encoder interface
@@ -25,6 +26,14 @@ func (e *YAMLEncoder) Marshal(data interface{}) (string, error) {
 	} else {
 		return string(response), err
 	}
+}
+
+func (e *YAMLEncoder) UnMarshalFile(f string, v interface{}) error {
+	file, err := os.Open(f)
+	if err != nil {
+		return err
+	}
+	return e.UnMarshal(file, v)
 }
 
 func (e *YAMLEncoder) UnMarshal(r io.Reader, result interface{}) error {

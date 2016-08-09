@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io"
 	"strings"
+	"os"
 )
 
 // An encoder that marshal's and unmarshal's Json which implements the Encoder interface
@@ -27,6 +28,14 @@ func (e *JSONEncoder) Marshal(data interface{}) (string, error) {
 	} else {
 		return string(response), err
 	}
+}
+
+func (e *JSONEncoder) UnMarshalFile(f string, v interface{}) error {
+	file, err := os.Open(f)
+	if err != nil {
+		return err
+	}
+	return e.UnMarshal(file, v)
 }
 
 func (e *JSONEncoder) UnMarshal(r io.Reader, result interface{}) error {
