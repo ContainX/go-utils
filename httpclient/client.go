@@ -186,7 +186,7 @@ func (h *httpClient) httpCall(method Method, url string, data interface{}, resul
 
 func (h *httpClient) invoke(r *Request) *Response {
 
-	log.Debug("%s - %s, Body:\n%s", r.method.String(), r.url, r.data)
+	log.Debugf("%s - %s, Body:\n%s", r.method.String(), r.url, r.data)
 
 	request, err := http.NewRequest(r.method.String(), r.url, strings.NewReader(r.data))
 
@@ -216,7 +216,7 @@ func (h *httpClient) invoke(r *Request) *Response {
 		content = string(rc)
 	}
 
-	log.Debug("Status: %v, RAW: %s", status, content)
+	log.Debugf("Status: %v, RAW: %s", status, content)
 
 	if status >= 200 && status < 300 {
 		if r.result != nil {
