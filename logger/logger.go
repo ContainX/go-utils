@@ -21,12 +21,26 @@ type Log struct {
 	logrus.Logger
 }
 
+type LogConfigurationHook interface {
+
+	// ConfigureLogger is a hook which allows custom setup and overrides for the default
+	// category based logger.  This allows the implementation to override formatting, output
+	// and level hooks.
+	ConfigureLogger(logger *Log)
+}
+
+var configHook LogConfigurationHook
 var loggers map[string]*Log
-var globalLogger *Log
 
 func init() {
 	loggers = map[string]*Log{}
-	globalLogger = GetLogger(DefaultCategory)
+}
+
+func SetLogConfigurationHook(hook LogConfigurationHook) {
+	configHook = hook
+	for _, l := range loggers {
+		hook.ConfigureLogger(l)
+	}
 }
 
 // GetLogger returns an existing logger for the specified category or
@@ -42,7 +56,7 @@ func GetLogger(category string) *Log {
 
 // Logger is a simple accessor to the global logging instance
 func Logger() *Log {
-	return globalLogger
+	return GetLogger(DefaultCategory)
 }
 
 // SetLevel enforces the specified level on the specified category.  If a logger
@@ -57,10 +71,17 @@ func SetLevel(level logrus.Level, category string) {
 
 func newLogger(c string) *Log {
 	log := &Log{category: c}
-	log.Out = os.Stderr
-	log.Formatter = &logrus.TextFormatter{ DisableTimestamp: false, TimestampFormat: DefaultTimeFormat}
-	log.Hooks = make(logrus.LevelHooks)
-	log.Level = logrus.InfoLevel
-
+	if configHook == nil {
+		log.Out = os.Stderr
+		log.Formatter = &logrus.TextFormatter{DisableTimestamp: false, TimestampFormat: DefaultTimeFormat}
+		log.Hooks = make(logrus.LevelHooks)
+		log.Level = logrus.InfoLevel
+	} else {
+		configHook.ConfigureLogger(log)
+	}
 	return log
+}
+
+func (l *Log) Category() string {
+	return l.category
 }
