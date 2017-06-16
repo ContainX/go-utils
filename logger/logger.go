@@ -4,12 +4,13 @@
 package logger
 
 import (
-	"github.com/Sirupsen/logrus"
 	"os"
+
+	"github.com/sirupsen/logrus"
 )
 
 const (
-	DefaultCategory = "_"
+	DefaultCategory   = "_"
 	DefaultTimeFormat = "2006-01-02T15:04:05.000"
 )
 
