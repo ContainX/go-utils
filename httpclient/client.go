@@ -11,6 +11,7 @@ import (
 	"time"
 	"github.com/ContainX/go-utils/encoding"
 	"github.com/ContainX/go-utils/logger"
+	"fmt"
 )
 
 var log = logger.GetLogger("httpclient")
@@ -45,6 +46,8 @@ type HttpClientConfig struct {
 	HttpUser string
 	// Http Basic Auth Password
 	HttpPass string
+	// Access Token will be applied to all requests if set
+	AccessToken string
 	// Request timeout
 	RequestTimeout int
 	// TLS Insecure Skip Verify
@@ -73,7 +76,7 @@ type HttpClient interface {
 
 	// Post the data against the specified url and unmarshal the
 	// response into the result if it is not nil
-	Post(url string, data interface{}, result interface{})
+	Post(url string, data interface{}, result interface{}) *Response
 }
 
 var (
@@ -98,15 +101,15 @@ func NewDefaultConfig() *HttpClientConfig {
 }
 
 // DefaultHttpClient provides a basic default http client
-func DefaultHttpClient() *httpClient {
+func DefaultHttpClient() HttpClient {
 	return NewHttpClient(*NewDefaultConfig())
 }
 
-func NewHttpClient(config HttpClientConfig) *httpClient {
+func NewHttpClient(config HttpClientConfig) HttpClient {
 	hc := &httpClient{
 		config: config,
 		http: &http.Client{
-			Timeout: (time.Duration(config.RequestTimeout) * time.Second),
+			Timeout: time.Duration(config.RequestTimeout) * time.Second,
 		},
 	}
 	if config.TLSInsecureSkipVerify {
@@ -266,5 +269,9 @@ func addHeaders(req *http.Request) {
 func addAuthentication(c HttpClientConfig, req *http.Request) {
 	if c.HttpUser != "" {
 		req.SetBasicAuth(c.HttpUser, c.HttpPass)
+	}
+
+	if c.AccessToken != "" {
+		req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", c.AccessToken))
 	}
 }
